@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'produto',
     'usuario',
     'pedido',
+    'tabbed_admin'
 ]
 
 MIDDLEWARE = [

@@ -31,7 +31,7 @@ class UsuarioSchemaUp(BaseModel):
     ativo: Optional[bool]
     data_criacao: Optional[datetime] = Field(default_factory=datetime.utcnow)
     data_modificacao: Optional[datetime] = Field(default_factory=datetime.utcnow)
-    id_usuario: Optional[uuid.UUID] = Field(default_factory=uuid.uuid4(), primary_key=True, index=True, unique=True)
+    id_usuario: Optional[uuid.UUID] = Field(default_factory=uuid.uuid4, primary_key=True, index=True, unique=True)
     nome: Optional[str]
     email: Optional[EmailStr]
     hashed_password: Optional[str]
@@ -41,7 +41,7 @@ class ProdutoSchema(BaseModel):
     ativo: bool
     data_criacao: datetime = Field(default_factory=datetime.utcnow)
     data_modificacao: datetime = Field(default_factory=datetime.utcnow)
-    id_produto: uuid.UUID = Field(default_factory=uuid.uuid4(), primary_key=True, index=True, unique=True)
+    id_produto: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True, index=True, unique=True)
     nome: str
     preco: float
     preco_atual: float

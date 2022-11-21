@@ -1,5 +1,5 @@
 from django.contrib import admin
-
+from tabbed_admin import TabbedModelAdmin
 from .models import Usuario
 from pedido.models import Pedido
 
@@ -8,10 +8,22 @@ class PedidoInlines(admin.StackedInline):
     extra = 0
 
 @admin.register(Usuario)
-class UsuarioAdmin(admin.ModelAdmin):
+class UsuarioAdmin(TabbedModelAdmin):
     list_display = ["nome", "email", "ativo"]
     inlines = [PedidoInlines]
-
+    tab_overview = (
+        (None, {
+            'fields': ('nome', 'email', 'ativo')
+        }),
+        
+    )
+    tab_pedido = (
+        PedidoInlines,
+    )
+    tabs = [
+        ('Overview', tab_overview),
+        ('Pedidos', tab_pedido)
+    ]
    
 
 

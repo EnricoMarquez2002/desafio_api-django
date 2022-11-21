@@ -31,7 +31,7 @@ async def read_products(db: Session = Depends(get_db)):
     return db_product
 
 @router.get('/{product_id}')
-async def read_product_by_id(product_id: str, db: Session = Depends(get_db), user: dict = Depends(get_current_user)):
+async def read_product_by_id(product_id: str, db: Session = Depends(get_db)):
     db_product_id = db.query(models.Produto)\
     .filter(models.Produto.id_produto == product_id)\
     .first()
@@ -65,7 +65,7 @@ async def create_products(product: ProdutoSchema, db: Session = Depends(get_db))
 
 
 @router.patch('/{product_id}')
-async def update_product(product_id: str, product: ProdutoSchemaUp, db: Session = Depends(get_db), user: dict = Depends(get_current_user)):
+async def update_product(product_id: str, product: ProdutoSchemaUp, db: Session = Depends(get_db)):
     db_product_id = db.query(models.Produto)\
     .filter(models.Produto.id_produto == product_id)\
     .first()
@@ -84,7 +84,7 @@ async def update_product(product_id: str, product: ProdutoSchemaUp, db: Session 
     return response_message(201, "Product Created")
 
 @router.delete('/{product_id}')
-async def delete_product(product_id: str, db: Session = Depends(get_db), user: dict = Depends(get_current_user)):
+async def delete_product(product_id: str, db: Session = Depends(get_db)):
     db_product_id = db.query(models.Produto)\
     .filter(models.Produto.id_produto == product_id)\
     .first()

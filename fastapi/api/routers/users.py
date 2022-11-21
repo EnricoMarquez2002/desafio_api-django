@@ -78,7 +78,7 @@ async def update_user(user_id: str, user: UsuarioSchemaUp, db: Session = Depends
     if user_model is None:
         raise HTTPException(status_code=404, detail="User not found")
     
-    user_model = models.Usuario
+    user_model = models.Usuario()
     user_model.ativo = user.ativo
     user_model.data_criacao = user.data_criacao
     user_model.data_modificacao = user.data_modificacao
@@ -88,7 +88,7 @@ async def update_user(user_id: str, user: UsuarioSchemaUp, db: Session = Depends
     user_model.email = user.email
     user_model.hashed_password = user.hashed_password
    
-    db.add(models.Usuario)
+    db.add(user_model)
     db.commit()
 
     return {
