@@ -70,3 +70,11 @@ class PedidoSchema(BaseModel):
     class Config:
         orm_mode=True
 
+
+class PedidoSchemaUp(BaseModel):
+    data_modificacao: datetime = Field(default_factory=datetime.utcnow)
+    status_pedido: Optional[int]
+    preco_pedido: Optional[float]
+    
+    class Config:
+        orm_mode = True

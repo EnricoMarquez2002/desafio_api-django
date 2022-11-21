@@ -2,8 +2,9 @@ from fastapi import APIRouter, Depends, HTTPException
 from database import SessionLocal, engine
 from sqlalchemy.orm import Session
 import models
-from schemas import PedidoSchema
+from schemas import PedidoSchema, PedidoSchemaUp
 from .validation import get_current_user
+from utils.exceptons import response_message, exception
 
 models.Base.metadata.create_all(bind=engine)
 
@@ -24,7 +25,7 @@ def get_db():
 async def read_orders(db: Session = Depends(get_db)):
     db_order = db.query(models.Pedido).all()
     if db_order is None:
-        raise HTTPException(status_code=404, detail="No orders registered yet")
+        raise exception(404, "Order not found")
     return db_order
 
 
@@ -49,10 +50,13 @@ async def create_order(order: PedidoSchema, db: Session = Depends(get_db)):
     order_model.preco_pedido = order.preco_pedido
     order_model.fk_UUID_usuario_id = order.fk_UUID_usuario_id
 
+    if order_model is None:
+        raise exception(404, "User not found")
+        
     db.add(order_model)
     db.commit()
 
-    return "order created"
+    return response_message(201, "Order Created")
 
 @router.delete('/{order_id}')
 async def delete_order_by_id(order_id: str, db: Session = Depends(get_db)):
@@ -68,7 +72,19 @@ async def delete_order_by_id(order_id: str, db: Session = Depends(get_db)):
      
     db.commit()
 
-    return {
-        "status code": 200,
-        "Transaction": "User deleted"
-    }
+    return response_message(200, "Order Deleted")
+       
+
+@router.put('/{order_id}')
+async def update_order(order_id: str, order: PedidoSchemaUp, db: Session = Depends(get_db)):
+    order_model = db.query(models.Pedido)\
+    .filter(models.Pedido.numero_pedido == order_id)\
+    .all() 
+
+    order_model = models.Pedido
+    order_model.data_modificacao = order.data_modificacao
+    order_model.status_pedido = order.status_pedido
+    order_model.preco_pedido = order.preco_pedido
+
+    db.add(order_model)
+    db.commit()
