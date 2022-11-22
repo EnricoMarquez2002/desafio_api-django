@@ -9,6 +9,7 @@ from jose import jwt, JWTError
 from typing import Optional
 from pydantic import EmailStr
 from utils.timezone import sp
+from utils.exceptons import exception
 
 
 models.Base.metadata.create_all(bind=engine)
@@ -36,9 +37,9 @@ def get_password_hash(password):
 def verify_password(plain_password, hashed_password):
     return bcrypt_context.verify(plain_password, hashed_password)
 
-def authenticate_user(email: EmailStr, password: str, db: Session = Depends(get_db)):
+def authenticate_user(username: str, password: str, db: Session = Depends(get_db)):
     user = db.query(models.Usuario)\
-    .filter(models.Usuario.email == email)\
+    .filter(models.Usuario.nome == username)\
     .first()    
 
     if not user:
@@ -62,20 +63,20 @@ def create_acess_token(username: str, user_id: str, expires_delta: Optional[time
 async def get_current_user(token: str = Depends(oauth2_bearer)):
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        username: str = payload.get("sub")
+        username: str = payload.get("sub")  
         user_id: str = payload.get("id")
         if username is None or user_id is None:
-            raise HTTPException(status_code=404, detail="User not found")
+            raise exception(404, "User not found")
         return{"username": username, "id": user_id}
     except JWTError:
-        raise HTTPException(status_code=404, detail="User not found")
+        raise exception(404, "User not found")
 
 @router.post('/token')
 async def login_for_acess_token(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
     user = authenticate_user(form_data.username, form_data.password, db)
 
     if not user:
-        raise HTTPException(status_code=404, detail="Username or password incorrect")
+        raise exception(404, "Username or password incorrect")
     token_expires = timedelta(minutes=5)
     token = create_acess_token(user.nome, user.id_usuario, expires_delta=token_expires)
 

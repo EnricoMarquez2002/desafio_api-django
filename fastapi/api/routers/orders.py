@@ -39,6 +39,17 @@ async def read_orders_by_user_id(user_id: str, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="User ID not found")
     return db_order_user_id
 
+@router.get('/{order_id}')
+async def read_order_by_order_id(order_id: str, db: Session = Depends(get_db)):
+    db_order_id = db.query(models.Pedido)\
+    .filter(models.Pedido.numero_pedido == order_id)\
+    .first()
+
+    if db_order_id is None:
+        raise exception(404, "Order id not found")
+    return db_order_id
+
+
 @router.post('')
 async def create_order(order: PedidoSchema, db: Session = Depends(get_db)):
     order_model = models.Pedido()
@@ -81,10 +92,13 @@ async def update_order(order_id: str, order: PedidoSchemaUp, db: Session = Depen
     .filter(models.Pedido.numero_pedido == order_id)\
     .first() 
 
-    order_model = models.Pedido()
-    order_model.data_modificacao = order.data_modificacao
-    order_model.status_pedido = order.status_pedido
-    order_model.preco_pedido = order.preco_pedido
+    if order_model:
+        order_model.data_modificacao = order.data_modificacao
+        order_model.status_pedido = order.status_pedido
+        order_model.preco_pedido = order.preco_pedido
 
-    db.add(order_model)
-    db.commit()
+        db.commit()
+
+        return response_message(200, "Order updated")
+    raise exception(404, "Order not found")        
+    
