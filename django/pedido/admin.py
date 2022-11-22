@@ -12,7 +12,6 @@ class PedidoProdutoInline(admin.TabularInline):
 class PedidoAdmin(admin.ModelAdmin):
     inlines = [PedidoProdutoInline]
     list_display = ['numero_pedido', 'status_pedido', 'preco_pedido']
-    raw_id_fields = ['fk_UUID_usuario']
 
 
 
