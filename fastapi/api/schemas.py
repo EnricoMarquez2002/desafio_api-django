@@ -3,14 +3,14 @@ from typing import Optional, List
 from datetime import datetime, timedelta
 import uuid
 import re
-#from utils.timezone import sp
+#from utils.timezone import sp  
 
 
 
 class UsuarioSchema(BaseModel):
     ativo: bool
     data_criacao: datetime = Field(default_factory=datetime.utcnow())
-    data_criacao: datetime = Field(default_factory=datetime.utcnow())
+    data_modificacao: datetime = Field(default_factory=datetime.utcnow())
     id_usuario: uuid.UUID = Field(default_factory=uuid.uuid4(), primary_key=True, index=True, unique=True)
     nome: str
     sobrenome: str
@@ -31,14 +31,14 @@ class UsuarioSchema(BaseModel):
 
 
 class UsuarioSchemaUp(BaseModel):
-    ativo: Optional[bool]
-    data_criacao: datetime = Field(default_factory=datetime.utcnow())
     data_modificacao: datetime = Field(default_factory=datetime.utcnow())
-    id_usuario: Optional[uuid.UUID] = Field(default_factory=uuid.uuid4, primary_key=True, index=True, unique=True)
     nome: Optional[str]
     email: Optional[EmailStr]
-    hashed_password: Optional[str]
     sobrenome: Optional[str]
+
+    class Config:
+        orm_mode = True
+
 
 class ProdutoSchema(BaseModel):
     ativo: bool
@@ -50,13 +50,9 @@ class ProdutoSchema(BaseModel):
     preco_atual: float
     promocao: bool = False
 
-class ProdutoSchemaUp(ProdutoSchema):
-    ativo: Optional[bool]
-    data_criacao: datetime = Field(default_factory=datetime.utcnow())
+class ProdutoSchemaUp(BaseModel):
     data_modificacao: datetime = Field(default_factory=datetime.utcnow())
-    id_produto: Optional [str]
     nome: Optional[str]
-    preco: Optional[float]
     preco_atual: Optional[float]
     promocao: Optional[bool] = False
 
@@ -65,7 +61,7 @@ class PedidoSchema(BaseModel):
     ativo: Optional[bool]
     data_criacao: datetime = Field(default_factory=datetime.utcnow())
     data_modificacao: datetime = Field(default_factory=datetime.utcnow())
-    numero_pedido: str
+    numero_pedido: str 
     status_pedido: int
     preco_pedido: float
     fk_UUID_usuario_id: str

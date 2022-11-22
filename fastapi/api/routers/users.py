@@ -4,6 +4,7 @@ from sqlalchemy.orm import Session
 import models
 from schemas import UsuarioSchema, UsuarioSchemaUp
 from passlib.context import CryptContext
+from utils.exceptons import response_message
 
 models.Base.metadata.create_all(bind=engine)
 
@@ -75,27 +76,18 @@ async def update_user(user_id: str, user: UsuarioSchemaUp, db: Session = Depends
     .filter(models.Usuario.id_usuario == user_id)\
     .first()
 
-    if user_model is None:
-        raise HTTPException(status_code=404, detail="User not found")
+    if user_model: 
+        user_model.data_modificacao = user.data_modificacao
+        user_model.nome = user.nome
+        user_model.sobrenome = user.sobrenome
+        user_model.email = user.email
+
     
-    user_model = models.Usuario()
-    user_model.ativo = user.ativo
-    user_model.data_criacao = user.data_criacao
-    user_model.data_modificacao = user.data_modificacao
-    user_model.id_usuario = user.id_usuario
-    user_model.nome = user.nome
-    user_model.sobrenome = user.sobrenome
-    user_model.email = user.email
-    user_model.hashed_password = user.hashed_password
-   
-    db.add(user_model)
-    db.commit()
+        db.commit()
 
-    return {
-        "status": 200,
-        "Detail": "User updated"
-    }
-
+        return response_message(202, "User updated")
+    raise Exception(404, "User not found")
+       
 @router.delete('/{user_id}')
 async def delete_user(user_id: str, db: Session = Depends(get_db)):
     user_model = db.query(models.Usuario)\

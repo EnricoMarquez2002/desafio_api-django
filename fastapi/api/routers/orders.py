@@ -39,6 +39,7 @@ async def read_orders_by_user_id(user_id: str, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="User ID not found")
     return db_order_user_id
 
+"""""
 @router.get('/{order_id}')
 async def read_order_by_order_id(order_id: str, db: Session = Depends(get_db)):
     db_order_id = db.query(models.Pedido)\
@@ -48,7 +49,7 @@ async def read_order_by_order_id(order_id: str, db: Session = Depends(get_db)):
     if db_order_id is None:
         raise exception(404, "Order id not found")
     return db_order_id
-
+"""
 
 @router.post('')
 async def create_order(order: PedidoSchema, db: Session = Depends(get_db)):

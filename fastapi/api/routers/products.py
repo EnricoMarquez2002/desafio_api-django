@@ -70,18 +70,21 @@ async def update_product(product_id: str, product: ProdutoSchemaUp, db: Session 
     .filter(models.Produto.id_produto == product_id)\
     .first()
 
-    if db_product_id is None:
-        raise exception(404, "Product id not found")
+    if db_product_id:
+        db_product_id.data_modificacao = product.data_modificacao
+        db_product_id.nome = product.nome
+        db_product_id.preco_atual = product.preco_atual
 
-    db_product_id.nome = product.nome
-    db_product_id.preco = product.preco
-    db_product_id.preco_atual = product.preco_atual
-    db_product_id.promocao = product.promocao
+        db_product_id.preco_atual *= 100 
 
-    db.add(db_product_id)
-    db.commit()
+        db_product_id.promocao = product.promocao
 
-    return response_message(201, "Product Created")
+        db.commit()
+
+        return response_message(202, "Product Updated")
+    raise exception(404, "Product id not found")
+
+        
 
 @router.delete('/{product_id}')
 async def delete_product(product_id: str, db: Session = Depends(get_db)):
