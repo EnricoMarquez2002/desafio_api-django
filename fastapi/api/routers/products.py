@@ -24,14 +24,14 @@ def get_db():
 
 
 @router.get('')
-async def read_products(db: Session = Depends(get_db)):
+async def read_products(db: Session = Depends(get_db), user_logged_in: int = Depends(get_current_user)):
     db_product = db.query(models.Produto).all()
     if db_product is None:
         raise exception(404, "No products registered yet")
     return db_product
 
 @router.get('/{product_id}')
-async def read_product_by_id(product_id: str, db: Session = Depends(get_db)):
+async def read_product_by_id(product_id: str, db: Session = Depends(get_db), user_logged_in: int = Depends(get_current_user)):
     db_product_id = db.query(models.Produto)\
     .filter(models.Produto.id_produto == product_id)\
     .first()
@@ -40,7 +40,7 @@ async def read_product_by_id(product_id: str, db: Session = Depends(get_db)):
     return db_product_id
 
 @router.post('', status_code=201)
-async def create_products(product: ProdutoSchema, db: Session = Depends(get_db)):
+async def create_products(product: ProdutoSchema, db: Session = Depends(get_db), user_logged_in: int = Depends(get_current_user)):
     db_product = models.Produto()
     db_product.ativo = product.ativo
     db_product.data_criacao = product.data_criacao
@@ -65,7 +65,7 @@ async def create_products(product: ProdutoSchema, db: Session = Depends(get_db))
 
 
 @router.patch('/{product_id}')
-async def update_product(product_id: str, product: ProdutoSchemaUp, db: Session = Depends(get_db)):
+async def update_product(product_id: str, product: ProdutoSchemaUp, db: Session = Depends(get_db), user_logged_in: int = Depends(get_current_user)):
     db_product_id = db.query(models.Produto)\
     .filter(models.Produto.id_produto == product_id)\
     .first()
@@ -87,7 +87,7 @@ async def update_product(product_id: str, product: ProdutoSchemaUp, db: Session 
         
 
 @router.delete('/{product_id}')
-async def delete_product(product_id: str, db: Session = Depends(get_db)):
+async def delete_product(product_id: str, db: Session = Depends(get_db), user_logged_in: int = Depends(get_current_user)):
     db_product_id = db.query(models.Produto)\
     .filter(models.Produto.id_produto == product_id)\
     .first()

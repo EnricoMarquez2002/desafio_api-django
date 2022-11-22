@@ -16,7 +16,7 @@ class Produto(Base):
     preco_atual = Column(Float(8,2)) 
     promocao = Column(Boolean, default=False)
 
- 
+    #pedido_pedidoproduto = relationship("PedidoProduto", back_populates="owner", cascade="all, delete")
 
 
 class Usuario(Base):
@@ -46,6 +46,22 @@ class Pedido(Base):
     fk_UUID_usuario_id = Column(String(100), ForeignKey("usuario_usuario.id_usuario"))   
 
     owner = relationship("Usuario", back_populates="pedido_pedido", lazy="joined")
+    #pedido_pedidoproduto = relationship("PedidoProduto", back_populates="owner_2", cascade="all, delete")
 
 
+"""
+class PedidoProduto(Base):
+    __tablename__ = 'pedido_pedidoproduto'
 
+    id = Column(BigInteger, autoincrement=True, primary_key=True)
+    ativo = Column(Boolean, default=True)
+    data_criacao = Column(DateTime)
+    data_modificacao = Column(DateTime)
+    preco_produto = Column(Float(8,2))
+    quantidade = Column(Integer)
+    fk_id_produto_id = Column(String(100), ForeignKey("produto_produto.id_produto"))
+    fk_numero_pedido_id = Column(String(100), ForeignKey("pedido_pedido.numero_pedido"))
+
+    owner = relationship("Produto", back_populates="produto_produto", lazy="joined")
+    owner_2 = relationship("Pedido", back_populates="pedido_pedido", lazy="joined")
+"""
