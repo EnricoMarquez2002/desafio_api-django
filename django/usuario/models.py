@@ -13,7 +13,7 @@ class Usuario(BaseModel):
        editable=False,
     )
     nome = models.CharField("Nome", max_length=100)
-    sobrenome = models.CharField("Sobrenome", max_length=100, default=None)
+    sobrenome = models.CharField("Sobrenome", max_length=100, unique=True, default=None)
     email = models.EmailField("E-mail")
     hashed_password = models.CharField(
         "Senha", 
