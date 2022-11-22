@@ -31,7 +31,7 @@ def get_db():
 
 
 @router.get('')
-async def read_users(db: Session = Depends(get_db), user_logged_in: int = Depends(get_current_user)):
+async def read_users(db: Session = Depends(get_db), user_logged_in: str = Depends(get_current_user)):
     db_user = db.query(models.Usuario).all()
     if db_user is None:
         raise HTTPException(status_code=404, detail="No users registered yet")
@@ -39,7 +39,7 @@ async def read_users(db: Session = Depends(get_db), user_logged_in: int = Depend
 
 
 @router.get('/{user_id}')
-async def read_user_name(user_id: str, db: Session = Depends(get_db), user_logged_in: int = Depends(get_current_user)):
+async def read_user_name(user_id: str, db: Session = Depends(get_db), user_logged_in: str = Depends(get_current_user)):
     user_name_model = db.query(models.Usuario)\
     .filter(models.Usuario.id_usuario == user_id)\
     .first()
@@ -71,8 +71,8 @@ async def create_user(user: UsuarioSchema, db: Session = Depends(get_db)):
         "Detail" : "User created"
     }
 
-@router.patch('')
-async def update_user(user_id: str, user: UsuarioSchemaUp, db: Session = Depends(get_db), user_logged_in: int = Depends(get_current_user)):
+@router.patch('/{user_id}')
+async def update_user(user_id: str, user: UsuarioSchemaUp, db: Session = Depends(get_db), user_logged_in: str = Depends(get_current_user)):
     user_model = db.query(models.Usuario)\
     .filter(models.Usuario.id_usuario == user_id)\
     .first()
@@ -90,7 +90,7 @@ async def update_user(user_id: str, user: UsuarioSchemaUp, db: Session = Depends
     raise Exception(404, "User not found")
        
 @router.delete('/{user_id}')
-async def delete_user(user_id: str, db: Session = Depends(get_db), user_logged_in: int = Depends(get_current_user)):
+async def delete_user(user_id: str, db: Session = Depends(get_db), user_logged_in: str = Depends(get_current_user)):
     user_model = db.query(models.Usuario)\
     .filter(models.Usuario.id_usuario == user_id)\
     .first()

@@ -11,7 +11,7 @@ class UsuarioSchema(BaseModel):
     ativo: bool
     data_criacao: datetime = Field(default_factory=datetime.utcnow())
     data_modificacao: datetime = Field(default_factory=datetime.utcnow())
-    id_usuario: uuid.UUID = Field(default_factory=uuid.uuid4(), primary_key=True, index=True, unique=True)
+    id_usuario: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True, index=True, unique=True)
     nome: str
     sobrenome: str
     email: EmailStr
