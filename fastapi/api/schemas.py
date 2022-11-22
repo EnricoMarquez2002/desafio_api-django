@@ -3,11 +3,14 @@ from typing import Optional, List
 from datetime import datetime
 import uuid
 import re
+from utils.timezone import sp
+
+
 
 class UsuarioSchema(BaseModel):
     ativo: bool
-    data_criacao: datetime = Field(default_factory=datetime.utcnow)
-    data_modificacao: datetime = Field(default_factory=datetime.utcnow)
+    data_criacao: datetime = Field(default_factory=datetime.now(tz=sp))
+    data_modificacao: datetime = Field(default_factory=datetime.now(tz=sp))
     id_usuario: uuid.UUID = Field(default_factory=uuid.uuid4(), primary_key=True, index=True, unique=True)
     nome: str
     sobrenome: str
@@ -29,8 +32,8 @@ class UsuarioSchema(BaseModel):
 
 class UsuarioSchemaUp(BaseModel):
     ativo: Optional[bool]
-    data_criacao: Optional[datetime] = Field(default_factory=datetime.utcnow)
-    data_modificacao: Optional[datetime] = Field(default_factory=datetime.utcnow)
+    data_criacao: datetime = Field(default_factory=datetime.now(tz=sp))
+    data_modificacao: datetime = Field(default_factory=datetime.now(tz=sp))
     id_usuario: Optional[uuid.UUID] = Field(default_factory=uuid.uuid4, primary_key=True, index=True, unique=True)
     nome: Optional[str]
     email: Optional[EmailStr]
@@ -39,8 +42,8 @@ class UsuarioSchemaUp(BaseModel):
 
 class ProdutoSchema(BaseModel):
     ativo: bool
-    data_criacao: datetime = Field(default_factory=datetime.utcnow)
-    data_modificacao: datetime = Field(default_factory=datetime.utcnow)
+    data_criacao: datetime = Field(default_factory=datetime.now(tz=sp))
+    data_modificacao: datetime = Field(default_factory=datetime.now(tz=sp))
     id_produto: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True, index=True, unique=True)
     nome: str
     preco: float
@@ -49,8 +52,8 @@ class ProdutoSchema(BaseModel):
 
 class ProdutoSchemaUp(ProdutoSchema):
     ativo: Optional[bool]
-    data_criacao: Optional[datetime] = Field(default_factory=datetime.utcnow)
-    data_modificacao: Optional[datetime] = Field(default_factory=datetime.utcnow)
+    data_criacao: datetime = Field(default_factory=datetime.now(tz=sp))
+    data_modificacao: datetime = Field(default_factory=datetime.now(tz=sp))
     id_produto: Optional [str]
     nome: Optional[str]
     preco: Optional[float]
@@ -60,8 +63,8 @@ class ProdutoSchemaUp(ProdutoSchema):
 
 class PedidoSchema(BaseModel):
     ativo: Optional[bool]
-    data_criacao: datetime = Field(default_factory=datetime.utcnow)
-    data_modificacao: datetime = Field(default_factory=datetime.utcnow)
+    data_criacao: datetime = Field(default_factory=datetime.now(tz=sp))
+    data_modificacao: datetime = Field(default_factory=datetime.now(tz=sp))
     numero_pedido: str
     status_pedido: int
     preco_pedido: float
@@ -72,9 +75,9 @@ class PedidoSchema(BaseModel):
 
 
 class PedidoSchemaUp(BaseModel):
-    data_modificacao: datetime = Field(default_factory=datetime.utcnow)
+    data_modificacao: datetime = Field(default_factory=datetime.now(tz=sp))
     status_pedido: Optional[int]
     preco_pedido: Optional[float]
     
     class Config:
-        orm_mode = True
+        orm_mode = True 

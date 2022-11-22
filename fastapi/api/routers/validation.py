@@ -7,7 +7,8 @@ from fastapi.security import OAuth2PasswordRequestForm, OAuth2PasswordBearer
 from datetime import datetime, timedelta
 from jose import jwt, JWTError
 from typing import Optional
-
+from pydantic import EmailStr
+from utils.timezone import sp
 
 
 models.Base.metadata.create_all(bind=engine)
@@ -35,15 +36,15 @@ def get_password_hash(password):
 def verify_password(plain_password, hashed_password):
     return bcrypt_context.verify(plain_password, hashed_password)
 
-def authenticate_user(username: str, password: str, db: Session = Depends(get_db)):
+def authenticate_user(email: EmailStr, password: str, db: Session = Depends(get_db)):
     user = db.query(models.Usuario)\
-    .filter(models.Usuario.nome == username)\
+    .filter(models.Usuario.email == email)\
     .first()    
 
     if not user:
-        return False
+        return None
     if not verify_password(password, user.hashed_password):
-        return False
+        return None
     return user
 
     
@@ -52,9 +53,9 @@ oauth2_bearer = OAuth2PasswordBearer(tokenUrl="token")
 def create_acess_token(username: str, user_id: str, expires_delta: Optional[timedelta] = None):
     encode = {"sub": username, "id": user_id}
     if expires_delta:
-        expire = datetime.utcnow() + expires_delta
+        expire = datetime.now(tz=sp) + expires_delta
     else:
-        expire = datetime.utcnow() + timedelta(minutes=5)
+        expire = datetime.now(tz=sp) + timedelta(minutes=5)
     encode.update({"exp": expire})
     return jwt.encode(encode, SECRET_KEY, algorithm=ALGORITHM)
 

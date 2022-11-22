@@ -75,13 +75,13 @@ async def delete_order_by_id(order_id: str, db: Session = Depends(get_db)):
     return response_message(200, "Order Deleted")
        
 
-@router.put('/{order_id}')
+@router.patch('/{order_id}')
 async def update_order(order_id: str, order: PedidoSchemaUp, db: Session = Depends(get_db)):
     order_model = db.query(models.Pedido)\
     .filter(models.Pedido.numero_pedido == order_id)\
-    .all() 
+    .first() 
 
-    order_model = models.Pedido
+    order_model = models.Pedido()
     order_model.data_modificacao = order.data_modificacao
     order_model.status_pedido = order.status_pedido
     order_model.preco_pedido = order.preco_pedido
