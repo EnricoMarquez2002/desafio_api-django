@@ -9,8 +9,8 @@ class PedidoInlines(admin.StackedInline):
 
 @admin.register(Usuario)
 class UsuarioAdmin(TabbedModelAdmin):
-    list_display = ["nome", "email", "ativo"]
     inlines = [PedidoInlines]
+    
     tab_overview = (
         (None, {
             'fields': ('nome', 'email', 'ativo')

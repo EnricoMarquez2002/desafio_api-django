@@ -32,7 +32,7 @@ class Pedido(BaseModel):
 class PedidoProduto(BaseModel):
     fk_id_produto = models.ForeignKey(Produto, verbose_name="Id do produto", on_delete=models.CASCADE)
     fk_numero_pedido = models.ForeignKey(Pedido, verbose_name="Numero do pedido", on_delete=models.CASCADE)
-    preco_produto = models.DecimalField("Preço do produto", max_digits=8, decimal_places=2)
+    preco_produto = models.DecimalField("Preço do produto", max_digits=9, decimal_places=2)
     quantidade = models.IntegerField("Quantidade")
 
     class Meta:
