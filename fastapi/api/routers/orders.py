@@ -22,7 +22,7 @@ def get_db():
 
 
 @router.get('')
-async def read_orders(db: Session = Depends(get_db)):
+async def read_orders(db: Session = Depends(get_db), user_logged_in: int = Depends(get_current_user)):
     db_order = db.query(models.Pedido).all()
     if db_order is None:
         raise exception(404, "No orders found")
@@ -52,7 +52,7 @@ async def read_order_by_order_id(order_id: str, db: Session = Depends(get_db)):
 """
 
 @router.post('')
-async def create_order(order: PedidoSchema, db: Session = Depends(get_db)):
+async def create_order(order: PedidoSchema, db: Session = Depends(get_db), user_logged_in: int = Depends(get_current_user)):
     order_model = models.Pedido()
     order_model.ativo = order.ativo
     order_model.data_criacao = order.data_criacao
@@ -88,7 +88,7 @@ async def delete_order_by_id(order_id: str, db: Session = Depends(get_db), user_
        
 
 @router.patch('/{order_id}')
-async def update_order(order_id: str, order: PedidoSchemaUp, db: Session = Depends(get_db)):
+async def update_order(order_id: str, order: PedidoSchemaUp, db: Session = Depends(get_db), user_logged_in: int = Depends(get_current_user)):
     order_model = db.query(models.Pedido)\
     .filter(models.Pedido.numero_pedido == order_id)\
     .first() 
