@@ -21,7 +21,7 @@ class UsuarioAdmin(TabbedModelAdmin):
         PedidoInlines,
     )
     tabs = [
-        ('Overview', tab_overview),
+        ('Usuário', tab_overview),
         ('Pedidos', tab_pedido)
     ]
    

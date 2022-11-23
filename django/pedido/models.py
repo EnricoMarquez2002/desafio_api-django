@@ -19,7 +19,7 @@ class Pedido(BaseModel):
     )
     status_pedido = models.IntegerField("Status do pedido", choices=STATUS_CHOICES)
     preco_pedido = models.DecimalField("Preço do pedido", max_digits=8, decimal_places=2)
-    fk_UUID_usuario = models.ForeignKey(Usuario, verbose_name="ID do usuário", on_delete=models.CASCADE)
+    fk_UUID_usuario = models.ForeignKey(Usuario, verbose_name="ID do usuário", null=True, on_delete=models.SET_NULL)
 
     def __str__(self) -> str:   
         return self.numero_pedido
