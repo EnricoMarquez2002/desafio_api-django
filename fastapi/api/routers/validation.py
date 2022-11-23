@@ -73,6 +73,7 @@ async def get_current_user(token: str = Depends(oauth2_bearer)):
 
 @router.post('/token')
 async def login_for_acess_token(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
+    print(form_data)
     user = authenticate_user(form_data.username, form_data.password, db)
 
     if not user:

@@ -31,7 +31,7 @@ class Usuario(Base):
     hashed_password = Column(String(100))
     sobrenome = Column(String(100))
 
-    pedido_pedido = relationship("Pedido", back_populates="owner", cascade="all, delete")
+    pedido_pedido = relationship("Pedido", back_populates="owner")
 
 
 class Pedido(Base):
@@ -43,7 +43,7 @@ class Pedido(Base):
     numero_pedido = Column(String(100), primary_key=True)
     status_pedido = Column(Integer)
     preco_pedido = Column(Float(8,2))
-    fk_UUID_usuario_id = Column(String(100), ForeignKey("usuario_usuario.id_usuario"))   
+    fk_UUID_usuario_id = Column(String(100), ForeignKey("usuario_usuario.id_usuario", ondelete='SET NULL'), nullable=True)   
 
     owner = relationship("Usuario", back_populates="pedido_pedido", lazy="joined")
     #pedido_pedidoproduto = relationship("PedidoProduto", back_populates="owner_2", cascade="all, delete")
