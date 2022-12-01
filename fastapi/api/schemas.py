@@ -40,13 +40,15 @@ class UsuarioSchemaUp(BaseModel):
     nome: Optional[str]
     email: Optional[EmailStr]
     sobrenome: Optional[str]
+    hashed_password: Optional[str]
 
     class Config:
         schema_extra = {
             "example":{
                 "nome": "nome",
                 "sobrenome": "sobrenome",
-                "email": "user@exemplo.com"
+                "email": "user@exemplo.com",
+                "hashed_password": "Exemplo!123"
             }   
         }
 

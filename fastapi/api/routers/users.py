@@ -16,7 +16,7 @@ models.Base.metadata.create_all(bind=engine)
 
 
 router = APIRouter(
-    prefix="/users",
+    prefix="/user",
     tags=["Users"]
 )
 
@@ -35,11 +35,11 @@ def get_db():
         db.close()
 
 
-@router.get('', dependencies=[Depends(JWTBearer())])
+@router.get('s', dependencies=[Depends(JWTBearer())])
 async def read_users(db: Session = Depends(get_db)):
     db_user = db.query(models.Usuario).all()
     if db_user is None:
-        raise exception(404, "No users registered yet")
+       raise exception(404, "No users registered yet")
     return db_user
 
 @router.get('/me')
@@ -79,26 +79,26 @@ async def create_user(user: UsuarioSchema, db: Session = Depends(get_db)):
         "Detail" : "User created"
     }
 
-@router.patch('/{user_id}', dependencies=[Depends(JWTBearer())])
-async def update_user(user_id: str, user: UsuarioSchemaUp, db: Session = Depends(get_db)):
+@router.patch('/')
+async def update_user( user: UsuarioSchemaUp, user_id: str = Depends(JWTBearer()), db: Session = Depends(get_db)):
     user_model = db.query(models.Usuario)\
     .filter(models.Usuario.id_usuario == user_id)\
     .first()
 
     if user_model: 
-        user_model.data_modificacao = "2022-11-24" 
+        user_model.data_modificacao = datetime.datetime.now() 
         user_model.nome = user.nome
         user_model.sobrenome = user.sobrenome
         user_model.email = user.email
-
-    
+        user_model.hashed_password = user.hashed_password
+        
         db.commit()
 
         return response_message(202, "User updated")
     raise exception(404, "User not found")
        
-@router.delete('/{user_id}', dependencies=[Depends(JWTBearer())])
-async def delete_user(user_id: str, db: Session = Depends(get_db)):
+@router.delete('/')
+async def delete_user(user_id: str = Depends(JWTBearer()), db: Session = Depends(get_db)):
     user_model = db.query(models.Usuario)\
     .filter(models.Usuario.id_usuario == user_id)\
     .first()
@@ -113,6 +113,6 @@ async def delete_user(user_id: str, db: Session = Depends(get_db)):
 
     return {
         "status": 200,
-        "Transaction": "Complete"
+        "Transaction": "User deleted"
     }
 
