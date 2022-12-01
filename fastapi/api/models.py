@@ -1,67 +1,50 @@
-from sqlalchemy import Column, Integer, String, Boolean, DateTime, ForeignKey, Float, BigInteger
+from sqlalchemy import Column, Integer, String, Boolean, DateTime, ForeignKey, Float
 from sqlalchemy.orm import relationship
 from database import Base  
+from sqlalchemy.sql import func
+import uuid
 
 
 
-class Produto(Base):
+class BaseModel(Base):
+    __abstract__ = True
+
+    ativo = Column(Boolean, default=True)
+    data_criacao = Column(DateTime(timezone=True), server_default=func.now())
+    data_modificacao = Column(DateTime(timezone=True), onupdate=func.now())
+
+class Produto(BaseModel):
+
     __tablename__ = 'produto_produto'
 
-    ativo = Column(Boolean, default=True) 
-    data_criacao = Column(DateTime)
-    data_modificacao = Column(DateTime)
     id_produto = Column(String(32), primary_key=True)
     nome = Column(String(100))
     preco = Column(Float(8,2))
     preco_atual = Column(Float(8,2)) 
     promocao = Column(Boolean, default=False)
 
-    #pedido_pedidoproduto = relationship("PedidoProduto", back_populates="owner", cascade="all, delete")
 
 
-class Usuario(Base):
+class Usuario(BaseModel):
     __tablename__ = 'usuario_usuario'
 
-    ativo = Column(Boolean, default=True)
-    data_criacao = Column(DateTime)
-    data_modificacao = Column(DateTime)
-    id_usuario = Column(String(36), primary_key=True)
+    id_usuario = Column(String(100), primary_key=True, default=uuid.uuid4)
     nome = Column(String(100))
     email = Column(String(254))
     hashed_password = Column(String(100))
     sobrenome = Column(String(100))
-
+    token_acess = Column(String(300), nullable=True)
+    refresh_token = Column(String(300), nullable=True)
+    
     pedido_pedido = relationship("Pedido", back_populates="owner")
 
 
-class Pedido(Base):
+class Pedido(BaseModel):
     __tablename__ = 'pedido_pedido'
 
-    ativo = Column(Boolean, default=True)
-    data_criacao = Column(DateTime)
-    data_modificacao = Column(DateTime)
     numero_pedido = Column(String(100), primary_key=True)
     status_pedido = Column(Integer)
     preco_pedido = Column(Float(8,2))
-    fk_UUID_usuario_id = Column(String(100), ForeignKey("usuario_usuario.id_usuario", ondelete='SET NULL'), nullable=True)   
+    fk_UUID_usuario_id = Column(String(100), ForeignKey("usuario_usuario.id_usuario", ondelete='CASCADE'), nullable=True)   
 
     owner = relationship("Usuario", back_populates="pedido_pedido", lazy="joined")
-    #pedido_pedidoproduto = relationship("PedidoProduto", back_populates="owner_2", cascade="all, delete")
-
-
-"""
-class PedidoProduto(Base):
-    __tablename__ = 'pedido_pedidoproduto'
-
-    id = Column(BigInteger, autoincrement=True, primary_key=True)
-    ativo = Column(Boolean, default=True)
-    data_criacao = Column(DateTime)
-    data_modificacao = Column(DateTime)
-    preco_produto = Column(Float(8,2))
-    quantidade = Column(Integer)
-    fk_id_produto_id = Column(String(100), ForeignKey("produto_produto.id_produto"))
-    fk_numero_pedido_id = Column(String(100), ForeignKey("pedido_pedido.numero_pedido"))
-
-    owner = relationship("Produto", back_populates="produto_produto", lazy="joined")
-    owner_2 = relationship("Pedido", back_populates="pedido_pedido", lazy="joined")
-"""

@@ -1,21 +1,27 @@
-from pydantic import BaseModel, Field, validator, EmailStr
-from typing import Optional, List
-from datetime import datetime, timedelta
-import uuid
+from pydantic import BaseModel, validator, EmailStr
+from typing import Optional
+from datetime import datetime
 import re
-#from utils.timezone import sp  
+
 
 
 
 class UsuarioSchema(BaseModel):
-    ativo: bool
-    data_criacao: datetime = Field(default_factory=datetime.utcnow())
-    data_modificacao: datetime = Field(default_factory=datetime.utcnow())
-    id_usuario: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True, index=True, unique=True)
     nome: str
     sobrenome: str
     email: EmailStr
     hashed_password: str
+
+    class Config:
+        orm_mode = True
+        schema_extra = {
+            "example": {
+                "nome": "nome",
+                "sobrenome": "sobrenome",
+                "email": "user@exemplo.com",
+                "hashed_password": "Senha@123"
+            }
+        }
 
     @validator('hashed_password')
     def validate_password(cls, value: str):
@@ -31,38 +37,35 @@ class UsuarioSchema(BaseModel):
 
 
 class UsuarioSchemaUp(BaseModel):
-    data_modificacao: datetime = Field(default_factory=datetime.utcnow())
     nome: Optional[str]
     email: Optional[EmailStr]
     sobrenome: Optional[str]
 
     class Config:
-        orm_mode = True
+        schema_extra = {
+            "example":{
+                "nome": "nome",
+                "sobrenome": "sobrenome",
+                "email": "user@exemplo.com"
+            }   
+        }
+
 
 
 class ProdutoSchema(BaseModel):
-    ativo: bool
-    data_criacao: datetime = Field(default_factory=datetime.utcnow())
-    data_modificacao: datetime = Field(default_factory=datetime.utcnow())
-    id_produto: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True, index=True, unique=True)
     nome: str
     preco: float
     preco_atual: float
     promocao: bool = False
 
 class ProdutoSchemaUp(BaseModel):
-    data_modificacao: datetime = Field(default_factory=datetime.utcnow())
     nome: Optional[str]
     preco_atual: Optional[float]
-    promocao: Optional[bool] = False
+    promocao: Optional[bool] 
 
 
 class PedidoSchema(BaseModel):
-    ativo: Optional[bool]
-    data_criacao: datetime = Field(default_factory=datetime.utcnow())
-    data_modificacao: datetime = Field(default_factory=datetime.utcnow())
-    numero_pedido: str 
-    status_pedido: int
+    status_pedido: int = 1
     preco_pedido: float
     fk_UUID_usuario_id: str
     
@@ -71,11 +74,12 @@ class PedidoSchema(BaseModel):
 
 
 class PedidoSchemaUp(BaseModel):
-    data_modificacao: datetime = Field(default_factory=datetime.utcnow())
     status_pedido: Optional[int]
     preco_pedido: Optional[float]
     
     class Config:
         orm_mode = True 
 
-    
+
+class RefreshTokenSchema(BaseModel):
+    refresh_token: str

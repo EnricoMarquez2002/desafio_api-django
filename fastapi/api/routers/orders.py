@@ -3,14 +3,19 @@ from database import SessionLocal, engine
 from sqlalchemy.orm import Session
 import models
 from schemas import PedidoSchema, PedidoSchemaUp
-from .validation import get_current_user
-from utils.exceptons import response_message, exception
+from utils.exceptions import response_message, exception
+from .auth_bearer import JWTBearer
+import datetime
+import uuid
+
+
 
 models.Base.metadata.create_all(bind=engine)
 
 router = APIRouter(
     prefix="/orders",
-    tags=["Orders"]
+    tags=["Orders"],
+    dependencies=[Depends(JWTBearer())]
 )
 
 def get_db():
@@ -22,15 +27,15 @@ def get_db():
 
 
 @router.get('')
-async def read_orders(db: Session = Depends(get_db), user_logged_in: int = Depends(get_current_user)):
-    db_order = db.query(models.Pedido).all()
+async def read_orders(db: Session = Depends(get_db)):
+    db_order = db.query(models.Pedido).first()
     if db_order is None:
         raise exception(404, "No orders found")
     return db_order
 
 
 @router.get('/{user_id}')
-async def read_orders_by_user_id(user_id: str, db: Session = Depends(get_db), user_logged_in: int = Depends(get_current_user)):
+async def read_orders_by_user_id(user_id: str, db: Session = Depends(get_db)):
     db_order_user_id = db.query(models.Pedido)\
     .filter(models.Pedido.fk_UUID_usuario_id == user_id)\
     .all()
@@ -39,26 +44,15 @@ async def read_orders_by_user_id(user_id: str, db: Session = Depends(get_db), us
         raise HTTPException(status_code=404, detail="User ID not found")
     return db_order_user_id
 
-"""
-@router.get('/{order_id}')
-async def read_order_by_order_id(order_id: str, db: Session = Depends(get_db)):
-    db_order_id = db.query(models.Pedido)\
-    .filter(models.Pedido.numero_pedido == order_id)\
-    .first()
-
-    if db_order_id is None:
-        raise exception(404, "Order id not found")
-    return db_order_id
-"""
 
 @router.post('')
-async def create_order(order: PedidoSchema, db: Session = Depends(get_db), user_logged_in: int = Depends(get_current_user)):
+async def create_order(order: PedidoSchema, db: Session = Depends(get_db)):
     order_model = models.Pedido()
-    order_model.ativo = order.ativo
-    order_model.data_criacao = order.data_criacao
-    order_model.data_modificacao = order.data_modificacao
-    order_model.numero_pedido = order.numero_pedido
-    order_model.status_pedido = order.status_pedido
+    order_model.ativo = True
+    order_model.data_criacao = datetime.datetime.now()
+    order_model.data_modificacao = datetime.datetime.now() 
+    order_model.numero_pedido =uuid.uuid4()
+    order_model.status_pedido = 1
     order_model.preco_pedido = order.preco_pedido
     order_model.fk_UUID_usuario_id = order.fk_UUID_usuario_id
 
@@ -71,7 +65,7 @@ async def create_order(order: PedidoSchema, db: Session = Depends(get_db), user_
     return response_message(201, "Order Created")
 
 @router.delete('/{order_id}')
-async def delete_order_by_id(order_id: str, db: Session = Depends(get_db), user_logged_in: int = Depends(get_current_user)):
+async def delete_order_by_id(order_id: str, db: Session = Depends(get_db)):
     db_model = db.query(models.Pedido)\
     .filter(models.Pedido.numero_pedido == order_id)\
     .first()
@@ -88,7 +82,7 @@ async def delete_order_by_id(order_id: str, db: Session = Depends(get_db), user_
        
 
 @router.patch('/{order_id}')
-async def update_order(order_id: str, order: PedidoSchemaUp, db: Session = Depends(get_db), user_logged_in: int = Depends(get_current_user)):
+async def update_order(order_id: str, order: PedidoSchemaUp, db: Session = Depends(get_db)):
     order_model = db.query(models.Pedido)\
     .filter(models.Pedido.numero_pedido == order_id)\
     .first() 
@@ -108,14 +102,3 @@ async def update_order(order_id: str, order: PedidoSchemaUp, db: Session = Depen
         return response_message(200, "Order updated")
     raise exception(404, "Order not found")        
     
-
-"""
-@router.get('/products{order_id}')
-async def read_products_by_order(db: Session = Depends(get_db)):
-    pedido_produto_model = db.query(models.PedidoProduto)\
-    .all()
-
-    if pedido_produto_model is None:
-        raise exception(404, "No orders found")
-    return pedido_produto_model
-"""
