@@ -48,6 +48,7 @@ async def read_me(user: str = Depends(JWTBearer()), db: Session = Depends(get_db
     .filter(models.Usuario.id_usuario == user)\
     .first()
 
+    print(user)
     if user:
         return user
     raise exception(404, "User not found")

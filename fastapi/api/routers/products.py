@@ -30,10 +30,13 @@ def get_db():
 
 @router.get('')
 async def read_products(db: Session = Depends(get_db)):
-    db_product = db.query(models.Produto).all()
-    if db_product is None:
-        raise exception(404, "No products registered yet")
-    return db_product
+    db_product = db.query(models.Produto)\
+    .all()
+
+    if db_product:
+        return db_product   
+    raise exception(404, "No products registered yet")
+
 
 @router.get('/{product_id}')
 async def read_product_by_id(product_id: str, db: Session = Depends(get_db)):

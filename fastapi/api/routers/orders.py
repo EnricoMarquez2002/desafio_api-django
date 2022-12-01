@@ -35,21 +35,22 @@ async def read_orders(db: Session = Depends(get_db)):
 
 
 @router.get('/{user_id}')
-async def read_orders_by_user_id(user_id: str, db: Session = Depends(get_db)):
+async def read_orders_by_user(user: str = Depends(JWTBearer()), db: Session = Depends(get_db)):
     db_order_user_id = db.query(models.Pedido)\
-    .filter(models.Pedido.fk_UUID_usuario_id == user_id)\
-    .all()
-
-    if db_order_user_id is None:
-        raise HTTPException(status_code=404, detail="User ID not found")
-    return db_order_user_id
+    .filter(models.Pedido.fk_UUID_usuario_id == user)\
+    .first()
+    
+    if db_order_user_id:
+        return db_order_user_id
+    raise HTTPException(status_code=404, detail="User ID not found")
+    
 
 
 @router.post('')
 async def create_order(order: PedidoSchema, db: Session = Depends(get_db)):
     order_model = models.Pedido()
     order_model.ativo = True
-    order_model.data_criacao = datetime.datetime.now()
+    order_model.data_criacao = datetime.datetime.now()  
     order_model.data_modificacao = datetime.datetime.now() 
     order_model.numero_pedido =uuid.uuid4()
     order_model.status_pedido = 1
