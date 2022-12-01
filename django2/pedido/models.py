@@ -3,7 +3,7 @@ from app_config.models import BaseModel
 from usuario.models import Usuario
 from produto.models import Produto
 import uuid
-
+from .validators import valida_status
 
 
 STATUS_CHOICES = [
@@ -18,15 +18,16 @@ class Pedido(BaseModel):
         "Número do pedido",
         max_length=100,
         default=uuid.uuid4, 
-        primary_key=True, 
+        primary_key=True,
+        editable=False
 
     )
-    status_pedido = models.IntegerField("Status do pedido", choices=STATUS_CHOICES)
+    status_pedido = models.IntegerField("Status do pedido", choices=STATUS_CHOICES, validators=[valida_status])
     preco_pedido = models.DecimalField("Preço do pedido", max_digits=8, decimal_places=2)
-    fk_UUID_usuario = models.ForeignKey(Usuario, verbose_name="ID do usuário", null=True, on_delete=models.SET_NULL)
+    fk_UUID_usuario = models.ForeignKey(Usuario, verbose_name="Usuário", null=True, on_delete=models.SET_NULL)
 
     def __str__(self) -> str:   
-        return self.numero_pedido
+        return f"Pedido número: {self.numero_pedido}"
 
     class Meta:
         verbose_name="Pedido"

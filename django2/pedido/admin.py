@@ -14,7 +14,7 @@ class PedidoAdmin(TabbedModelAdmin):
 
     tab_overview = (
         (None, {
-            'fields': ('numero_pedido', 'status_pedido', 'preco_pedido', 'fk_UUID_usuario')
+            'fields': ('status_pedido', 'preco_pedido', 'fk_UUID_usuario')
         }),
         
     )
